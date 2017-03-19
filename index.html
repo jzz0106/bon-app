@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>Shanghai</title>
+		<meta name="keyword" content="Bon App, Shanghai, review, community, food, restaurant, bars, expat, local, recommendation">
+		<meta name="description" content="Reviews and recommendations in Shanghai. ">
+		<link rel="stylesheet" href="./css/bootstrap.min.css">
+		<link rel="stylesheet" href="./css/style.css">
+
+  		<style>
+  			[v-cloak]{
+  				display:none;
+  			}
+  		</style>
+	</head>
+	
+	
+	
+	<body class="body" >
+		<div id="app" v-cloak @click='clearselect'>
+		<navbar :d='dinerInfo'></navbar>
+
+		<div class="bg-fff">
+			<div class="container" style="line-height: 32px;">
+				<div class="row font14"><a href='index.html' class="c261c00 ">Home</a>&nbsp;&gt;&nbsp;Search</div>
+			</div>
+		</div>
+		<div class="container" >
+			<div class="row">
+				<dl class="dl-horizontal search-list-dl pd-t-5">
+					<dt>Results</dt>
+					<dd id="totalResults">
+						<label >{{query.totalCount}} result(s)</label>
+					</dd>
+
+					<div v-show='searchForm.cuisine!=""||searchForm.neighborhood!=""||searchForm.averagePrice!=""'>
+						<dt id="ShowTitle">Show</dt>
+						<dd>
+          					<span class="label-selected" v-if='searchForm.cuisine!=""'>{{searchForm.cuisine}}<span class="label-cancel" @click='removeSelect(1)'></span></span>
+          					<span class="label-selected" v-if='searchForm.neighborhood!=""'>{{searchForm.neighborhood}}<span class="label-cancel" @click='removeSelect(2)'></span></span>
+          					<span class="label-selected" v-if='searchForm.averagePrice!=""'>{{searchForm.averagePrice}}<span class="label-cancel" @click='removeSelect(3)'></span></span>
+							<a class="c384351" href="javascriot:void(0);" @click='removeSelect()'>clear all</a>
+						</dd>
+					</div>
+					<dt>Refine Search</dt>
+					<dd>
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" @click.stop='showSelect(1)'>Cuisine <span class="caret"></span></button>
+							<ul class="dropdown-menu select-wrap-height" :class="{block:selectnum==1}">
+								<li v-for='c in cuisines'><a href="javascript:void(0)" @click='queryselect(1,c)'>{{c}}</a></li>
+							</ul>
+						</div>
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" @click.stop='showSelect(2)'>Area <span class="caret"></span></button>
+							<ul class="dropdown-menu select-wrap-height" :class="{block:selectnum==2}">
+								<li><h5 class="pd-l-10">By Delivery</h5></li>
+								<li><a href="javascript:void(0)" @click='queryselect(2,areas.delivery)'>{{areas.delivery}}</a></li>
+								<li><h5 class="pd-l-10">By Districts</h5></li>
+								<li v-for='dis in areas.districts'><a href="javascript:void(0)" @click='queryselect(2,dis)'>{{dis}}</a></li>
+								<li><h5 class="pd-l-10">By Neighbors</h5></li>
+								<li v-for="nei in areas.neighborhoods"><a href="javascript:void(0)" @click='queryselect(2,nei)'>{{nei}}</a></li>
+							</ul>
+						</div>
+						<div class="btn-group">
+							<button type="button" class="btn btn-default dropdown-toggle" @click.stop='showSelect(3)'>Price <span class="caret"></span></button>
+							<ul class="dropdown-menu" :class="{block:selectnum==3}">
+								<li v-for="price in prices"><a href="javascript:void(0)" @click='queryselect(3,price)'>{{price}}</a></li>
+							</ul>
+						</div>
+					</dd>
+				</dl>
+			</div>
+		</div>
+		
+		<div class="bg-fbfbf8">
+			<div class="container">
+				<div class="row">
+					<div class="row">
+						<!--数据列表-->
+						<div class="col-md-12" role="main" >
+							<ul class="list" id="allList" v-show='query.totalPages!=0'>
+								<li class="list-item" v-for='r in restaurants'>
+									<div class="clearfix">
+										<h3 class="pull-left italic list-num">{{query.limit*(query.page-1)+$index+1}}</h3>
+										
+										<div class="pull-left">
+											<a href="javascript:void(0)" class="list-content-link" @click='getDetail(r.restaurantId)'>
+												<img class="pull-left" :src="r.thumbnail==''||r.thumbnail==null?'images/detail.jpg':r.thumbnail" width="100" height="100" style="background-color: #ddd;">
+											</a>
+
+											<div class="list-content">
+												<a href="javascript:void(0)" class="list-content-link" @click='getDetail(r.restaurantId)'>{{r.name}}</a>
+												<p v-if='r.cuisine.indexOf(",")!=-1'>
+													<a class='list-cuisine' href="javascript:void(0);" v-for='rr in r.cuisine.split(",")' @click='queryselect(1,rr)'>{{rr}}</a>
+												</p>
+												<p v-else>
+													<a class='list-cuisine' href="javascript:void(0);">{{r.cuisine}}</a>
+												</p>
+												<p>
+													<a class='c75888c' href="javascript:void(0);" @click='queryselect(2,r.area)'>{{r.area}}</a>
+												</p>
+												<p class='c384351'>
+													{{r.location}}
+												</p>
+											</div>
+										</div>
+										
+										<div class="pull-right list-right">
+											<span class="list-percent">{{r.votePercent}}</span>
+											<span class="list-votes">{{r.totalVoteStr}}</span>
+											<span class="list-price">{{r.averagePrice}}</span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							
+							<!--若无数据显示此提示信息-->
+							<div class="missing-restaurant none" v-show='query.totalCount==0'>
+								<h5 class="text-center mg-t-30 italic" >
+						          Can't find what you're looking for?
+						        </h5>
+							</div>
+							
+							<!--分页-->
+							<ul class="pagination pagination-lg" v-show='query.totalPages>1'>
+								<li :class="{disabled:query.firstPage}"><a title="Go to first page" href="javascript:void(0)" @click='getResList(1)'>First</a></li>
+								<li :class="{disabled:!query.hasPrePage}" v-if='!query.hasPrePage'><a title="Go to previous page" href="javascript:void(0)" >Previous</a></li>
+								<li :class="{disabled:!query.hasPrePage}" v-if='query.hasPrePage'><a title="Go to previous page" href="javascript:void(0)" @click='getResList(query.page-1)'>Previous</a></li>
+								<li :class="{active:query.page==s}" v-for='s in query.slider'>
+									<a href="#" title="Go to page {{s}}" @click='getResList(s)'>{{s}}</a>
+								</li>
+								<li :class="{disabled:!query.hasNextPage}" v-if='!query.hasNextPage'><a title="Go to next page" href="javascript:void(0)" >Next</a></li>
+								<li :class="{disabled:!query.hasNextPage}" v-else><a title="Go to next page" href="javascript:void(0)" @click='getResList(query.page+1)'>Next</a></li>
+								<li :class="{disabled:query.lastPage}"><a title="Go to last page" href="javascript:void(0)" @click='getResList(query.totalPages)'>Last</a></li>
+							</ul>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<!-- footer -->
+		<div class=" footer">
+			<div class="container">
+				<div class="row">
+					<div class="footer-left pull-left">
+						<span class="footer-title">Learn More</span>
+						<ul class="clearfix mg-t-10">
+							<li class="pull-left  mg-r-10">
+								<a href="/html/aboutus">About us</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="http://blog.bonapp.cn/" target="_blank">Blog</a>
+							</li>
+							<li class="pull-left">
+								<a href="/html/careers">Careers</a>
+							</li>
+						</ul>
+					</div>
+					<div class="footer-mid pull-left">
+						<span class="footer-title"> Help</span>
+						<ul class="clearfix mg-t-10">
+							<li class="pull-left mg-r-10">
+								<a href="/html/contactus">Contact us</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="/html/faq">FAQ</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="/html/UserGuidelines">User Guidelines</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="/html/terms"> Terms</a>
+							</li>
+							<li class="pull-left">
+								<a href="/html/privacypolicy">Privacy Policy</a>
+							</li>
+						</ul>
+					</div>
+					<div class="footer-right pull-left" id="downloadLink">
+						<a href='https://itunes.apple.com/us/app/indulgesmart/id867942412?mt=8&uo=4' target='_blank'><img src="./images/appstore.png" width="116" height="40" class="mg-r-10"></a>
+						<a href='https://play.google.com/store/apps/details?id=com.indulgesmart' target='_blank'><img src="./images/googleplay.png" width="116" height="40"></a>
+					</div>
+					<div class="pull-left">
+						<span class="footer-title pd-b-10" style="display: block">Bon App accepts</span>
+						<img src="./images/accept.png" alt="" style="display: block;width: 150px" />
+					</div>
+				</div>
+				<div class="row footer-copyright">
+					Copyright © 2014 - <span id="currentYear"></span>, Bon App, All Rights Reserved.
+				</div>
+			</div>
+		</div>
+
+	</body>
+	
+	<template id="navbar" >
+		<div class="navbar search-bar-bg">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 pos-rel">
+						<a href='index.html'><img src="./images/logo.png" alt="Bon App" class="search-bar-logo"></a>
+						<div class="input-group input-group-lg search-box detail-search">
+							<input type="text" class="form-control search-input" placeholder="Goodfellas, French, Brunch, Rooftop..." v-model='searchKey' @keyup.13='getSearch'">
+							<a href="javascript:void(0);" class="input-group-addon glyphicon glyphicon-search action" @click='getSearch'"></a>
+							<div class="pos-abs search-input-cancel cursor" v-show="!(searchKey==''||searchKey==null)" @click="searchKey=''"></div>
+						</div>
+						<ul class="search-bar-login" v-show="!isLogin">
+							<li class="pull-left mg-r-20">
+								<a href="javascript:void(0)" class="font16 cfff text-hover" @click='back2login(0)'>Log in</a>
+							</li>
+							<li class="pull-left">
+								<a class="btn-signup font16" href="javascript:void(0)" @click='back2login(1)'>Sign up</a>
+							</li>
+						</ul>
+
+						<div class="search-bar-login" v-show="isLogin">
+							<div class="dropdown">
+								<a class="block" href="javascript:void(0)" @click="isShow=!isShow">
+									<img :src="d.headImage||'images/userhead.png'" width="45" height="45" class="search-bar-head">
+									<span class="cfff mg-r-5">{{d.firstname}}</span><span class="caret cfff"></span>
+								</a>
+								<ul class="dropdown-menu" aria-labelledby="dLabel" :class='{block:isShow}' >
+									<li><a role="menuitem" tabindex="-1" href="javascript:void(0)" @click='logout'>Log out</a></li>
+								</ul>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>		
+	
+	</template>
+		<script src="js/vue/vue.js"></script>
+  		<script src="js/vue/vue-resource.js"></script>
+  		<script src="js/index.js"></script>
+</html>

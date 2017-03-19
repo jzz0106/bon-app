@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Bon App</title>
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+  	[v-cloak]{
+  		display:none;
+  	}
+		input{
+			outline: none;
+			transition:  ease-in-out .25s;
+			
+		}
+		input:focus{
+			box-shadow: 0px 0px 1px 1px rgb(150,196,245);
+		}
+    .form-caret {
+      display: inline-block;
+      width: 0;
+      height: 0;
+      margin-left: 2px;
+      vertical-align: middle;
+      color: #c4c4c4;
+      border-top: 10px solid;
+      border-right: 6px solid transparent;
+      border-left: 6px solid transparent;
+    }
+    .form-dropdown-show {
+      width: 310px;
+      height: 49px;
+      background-color: #fff;
+      border: 1px solid #eee;
+      border-radius: 30px;
+      text-indent: 15px;
+      text-align: left;
+    }
+
+    .form-dropdown-toggle {
+      background-color: #f0f0f0;
+      width: 62px;
+      height: 49px;
+      border-radius: 30px;
+    }
+    .signup-select{
+      display: block;
+      margin: 0 auto;
+      width: 372px;
+      height: 49px;
+    }
+  </style>
+
+
+  
+</head>
+<body class="signup-bg">
+  <div class="container">
+    <div class="row" v-cloak>
+    	
+       <!--signup start-->
+        <div class="modal-dialog z-index-0" " v-show='showType==1'>
+          <div class="modal-content bg-f0f0f0">
+            <div class="modal-header border-2-dedede-b">
+              <h4 class="modal-title c261c00 font24 italic text-center">Sign Up</h4>
+            </div>
+            <div class="modal-body bg-f7f7f7">
+              <p class="italic font18 bold c261c00 text-center">Discover your next favorite restaurant,<br>get deals and recommendations. Free!</p>
+              <i class="cff6c6c italic sminput-error" >{{signupError.firstnameErrorMsg}}</i>
+            	<input type="text" placeholder="Firstname" class="sminput" @input="checkData(0)" @blur="checkData(0)" v-model='signupForm.firstname'>
+              <i class="cff6c6c italic sminput-error" >{{signupError.emailErrorMsg}}</i>
+             <input type="email" placeholder="E-mail" class="sminput"  v-model='signupForm.email'  @blur="checkData(1)">
+              <i class="cff6c6c italic sminput-error" >{{signupError.passwordErrorMsg}}</i>
+             <input type="password" placeholder="Password" class="sminput"  v-model='signupForm.password' @input="checkData(2)" @blur="checkData(2)">
+             <input type="button" value="Sign Up" class="btn-is block mg-20-auto width-372" @click='signup'>
+             <p class="c75888c text-center">
+               By signing up you confirm to accept our <a class="c1e6574" href="javascript:void(0);">Terms of Service</a><br>
+                We'll never share your email, check out our <a class="c1e6574" href="javascript:void(0);">Privacy Policy</a>
+             </p>
+            </div>
+            <div class="modal-footer mg-t-0 border-2-dedede-t">
+              <p class="text-center">
+                Have an account already? <a href="javascript:void(0)" class="font18 c1e6574" @click="switchsl()">Log in!</a>
+              </p>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      <!--signup end-->
+      
+      <!--login start-->
+      <div class="modal-dialog z-index-0" v-show='showType==0'>
+        <div class="modal-content bg-f0f0f0">
+          <div class="modal-header border-2-dedede-b">
+            <h4 class="modal-title c261c00 font24 italic text-center">Log In</h4>
+          </div>
+          <div class="modal-body bg-f7f7f7">
+            <i class="cff6c6c italic sminput-error" >{{loginError.emailErrorMsg}}</i>
+           <input type="email" placeholder="E-mail" class="sminput" @input="checkData(3)" @blur="checkData(3)" v-model='loginForm.email'>
+            <i class="cff6c6c italic sminput-error" >{{loginError.passwordErrorMsg}}</i>
+           <input type="password" placeholder="Password" class="sminput" @input="checkData(4)" @blur="checkData(4)" v-model='loginForm.password'>
+           <input type="button" value="Log In" class="btn-is block mg-20-auto width-372 mg-t-30" @click='login'>
+          </div>
+         <div class="modal-footer mg-t-0 border-2-dedede-t clearfix">
+            <p class="pull-right mg-all-0" style="line-height: 40px;">
+              Don't have an account? <a href="javascript:void(0);" class="c1e6574" class="font18" @click="switchsl()">Create one!</a>
+            </p>
+          </div>  
+           
+        </div><!-- /.modal-content -->
+      </div>
+      <!--login end-->
+    </div>
+  </div>	
+</body>
+  <script src="js/vue/vue.js"></script>
+  <script src="js/vue/vue-resource.js"></script>
+  <script src="js/signup.js"></script>
+</html>

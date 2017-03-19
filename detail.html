@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en" id="app">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>{{resInfo.name}}</title>
+		<meta name="keyword" content="Bon App, {{resInfo.cuisine}}, {{resInfo.area}}, Shanghaireview, community">
+		<meta name="description" content="266 Reviews and 725 Photos of Beef & Liberty, 'Wow... I had a blast tonight. Yes, their fried Mac&cheese are awesome, yes the bbq ribs are great, yes the place is nicely decorated and yes again the location is pretty ideal (except the subway stati...' ">
+		<link rel="stylesheet" href="./css/bootstrap.min.css">
+		<link rel="stylesheet" href="./css/style.css">
+		<style>
+  			[v-cloak]{
+  				display:none;
+  			}
+  		</style>
+	</head>
+
+	<body class="body">
+		<div  v-cloak >
+		<navbar :d='dinerInfo'></navbar>
+		<div class="bg-fff">
+			<div class="container" style="line-height: 32px;">
+				<div class="row font14"><a href='index.html' class="c261c00">Home</a>&nbsp;&gt;&nbsp;
+					<a href="index.html" class="c261c00">Search</a>&nbsp;&gt;&nbsp;{{resInfo.name}}</div>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-md-5">
+					<h1 class="font30-b c261c00">
+		    			{{resInfo.name}}    
+		    			<br>
+			    		<p class="font18 pd-t-5">{{resInfo.cnName}} </p>
+	    			</h1>
+					<ul>
+						<li class="list-tag-item"><a href="javascript:void(0);" >{{resInfo.area}}</a></li>
+						<li class="list-tag-item" >{{resInfo.cuisine}}</li>
+						<li class="list-tag-item font18">{{resInfo.averagePrice}}</li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="row detail-profile mg-t-20 pd-t-15 pd-b-15">
+				<div class="col-md-6" style="height:274px;width:470px">
+					<div class="col-md-6" style="height:274px;width:450px;background-color: rgb(252, 249, 242);">
+						<img style="height: 274px; width: 430px;" :src="resInfo.thumbnail==''||resInfo.thumbnail==null?'images/detail.jpg':resInfo.thumbnail" />
+					</div>
+				</div>
+				<div class="col-md-7">
+					<div class="pos-abs" style="width: 80px;">
+						<button class="btn-circle btn-like mg-b-10">I like it</button>
+						<button class="btn-circle btn-like">I don't</button>
+					</div>
+					<div class="mg-l-100 pos-rel">
+						<strong class="font-3em italic c261c00" style="line-height: 1;">{{resInfo.votePercent}}</strong>
+						<span class="block font24" style="line-height: 2;">{{resInfo.totalVoteStr}}</span>
+						<div class="mg-t-15">
+							<p class="pd-l-35 pos-rel  font16 detail-location">{{resInfo.location}}<br>{{resInfo.cnLocation}}</p>
+							<p class="pd-l-35 lh-1  font16 detail-phone" style="line-height:25px;">{{resInfo.telephone}}</p>
+							<p class="pd-l-35 lh-1  font16 detail-clock" style="line-height:25px;">{{resInfo.openHours}}</p>
+							<p class="pd-l-35 lh-1  font16 detail-website" style="line-height:25px;">
+								<a href="http://{{resInfo.website}}" class="c384351" target="_blank">{{resInfo.website}}</a>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-12 mg-t-30">
+					<div class="text-center mg-t-50 mg-b-50 none"><img src="./images/dataloading.gif"></div>
+					<div class="col-md-12 mg-t-30" >
+						<ul class="pic-list clearfix" v-if='resInfo.images!=""&&resInfo.images!=null'>
+							<li v-for="i in resInfo.images | limitBy 6" class="pic-list-item pic" :style="{background:'url('+i.smallImageUrl+') no-repeat 0 0'}">
+								<a href="{{i.bigImageUrl}}" target="_blank"></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="row mg-t-50">
+				<div class="col-md-12 pd-r-15">
+					<div class="mg-b-10 clearfix">
+						<span class="font24-b c261c00 italic pull-left" id="revList">Reviews</span>
+					</div>
+					<!-- 1 -->
+					<div class="text-center mg-t-50 mg-b-50 none"><img src="./images/dataloading.gif"></div>
+						<div class="pd-b-40" class="display:none">
+							<ul class="list">
+								<li class="list-item clearfix" v-for="rev in revResult">
+									<a href="/profile/63509" class="powerStatus" style="position: absolute;width:45px;height:45px;left:10px;">
+										<!--是否是超级用户-->
+										<img v-if="rev.powerStatus==0" src="./images/status.png" alt="restaurant App Power User" title="Bon App Power User" style="position:absolute; width:18px; bottom:0;right:-1px;z-index: 2;">
+										<!--用户头像-->
+										<img :src="rev.headImage==''||rev.headImage==null?'images/userhead.png':rev.headImage" class="review-thumbnail">
+									</a>
+									<div class="mg-l-70">
+										<div class="clearfix mg-b-5">
+											<div class="pull-left font18">
+												<!--用户名-->
+												<a href="/profile/63509" class="c261c00">{{rev.userName}}</a>
+												<!--是否喜欢该餐厅-->
+												<img :src="rev.likeIt==1?'./images/likeit.png':'./images/dislike.png'" class="like-icon" >
+											</div>
+											<!--评论时间-->
+											<div class="pull-right  mg-r-10 c75888c">{{rev.reviewDateStr}}</div>
+										</div>
+	
+										<div class="clear:left;">
+											<!--评论人一共有多少条评论-->
+											<span class=" reviews-icon pd-l-20 pd-r-10">{{rev.reviews}}</span>
+											<!--国籍-->
+											<span class=" nation-icon pd-l-20">{{rev.nation}}</span>
+										</div>
+										<!--评论内容-->
+										<p class="mg-t-25 pd-r-10">
+											{{rev.content}}
+										</p>
+										<!--评论中的图片-->
+										<ul class="clearfix mg-b-10" id="reviewGallery">
+											<li class="pic-list-item pic review-pic-item" v-for="image in rev.images" :style="{background:'url('+image.smallImageUrl+') no-repeat 0 0'}">
+												<a href="{{image.bigImageUrl}}" target="_blank">
+												</a>
+											</li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+							<!--分页-->
+							<ul class="pagination pagination-lg" v-show="query.totalPages > 1">
+								<li :class="{disabled:query.firstPage}"><a title="Go to first page" @click="getReview(1)" href="#revList">First</a></li>
+								<li :class="{disabled:query.firstPage}">
+									<a v-if="query.page-1<1" title="Go to previous page" href="#revList">Previous</a>
+									<a v-else title="Go to previous page" @click="getReview(query.page-1)" href="#revList">Previous</a>
+								</li>
+								
+								<li :class="{active:query.page==s}" v-for="s in query.slider">
+									<a title="Current page is {{s}}" @click="getReview(s)" href="#revList">{{s}}</a>
+								</li>
+								
+								<li :class="{disabled:query.lastPage}">
+									<a v-if="query.page+1>query.totalPages" title="Go to previous page" href="#revList">Next</a>
+									<a v-else title="Go to previous page" @click="getReview(query.page+1)" href="#revList">Next</a>
+								</li>
+								<li :class="{disabled:query.lastPage}"><a title="Go to last page" href="#revList" @click="getReview(query.totalPages)">Last</a></li>
+							</ul>
+							<!--没有就显示-->
+							<p class="mg-20-auto pd-t-50 pd-b-50 bg-fff  text-center font16" v-show="query.totalCount==0">
+								This restaurant has no review.
+							</p>
+						</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<!-- footer -->
+		<div class=" footer">
+			<div class="container">
+				<div class="row">
+					<div class="footer-left pull-left">
+						<span class="footer-title">Learn More</span>
+						<ul class="clearfix mg-t-10">
+							<li class="pull-left  mg-r-10">
+								<a href="/html/aboutus">About us</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="http://blog.bonapp.cn/" target="_blank">Blog</a>
+							</li>
+							<li class="pull-left">
+								<a href="/html/careers">Careers</a>
+							</li>
+						</ul>
+					</div>
+					<div class="footer-mid pull-left">
+						<span class="footer-title">Help</span>
+						<ul class="clearfix mg-t-10">
+							<li class="pull-left mg-r-10">
+								<a href="/html/contactus">Contact us</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="/html/faq">FAQ</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="/html/UserGuidelines">User Guidelines</a>
+							</li>
+							<li class="pull-left mg-r-10">
+								<a href="/html/terms">Terms</a>
+							</li>
+							<li class="pull-left">
+								<a href="/html/privacypolicy">Privacy Policy</a>
+							</li>
+						</ul>
+					</div>
+					<div class="footer-right pull-left" id="downloadLink">
+						<a href='https://itunes.apple.com/us/app/indulgesmart/id867942412?mt=8&uo=4' target='_blank'><img src="./images/appstore.png" width="116" height="40" class="mg-r-10"></a>
+						<a href='https://play.google.com/store/apps/details?id=com.indulgesmart' target='_blank'><img src="./images/googleplay.png" width="116" height="40"></a>
+					</div>
+					<div class="pull-left">
+						<span class="footer-title pd-b-10" style="display: block">Bon App accepts</span>
+						<img src="./images/accept.png" alt="" style="display: block;width: 150px" />
+					</div>
+				</div>
+				<div class="row footer-copyright">
+					Copyright © 2014 - <span id="currentYear"></span>, Bon App, All Rights Reserved.
+				</div>
+			</div>
+		</div>
+		<!-- end footer -->
+	</body>
+	<template id="navbar" >
+		<div class="navbar search-bar-bg">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12 pos-rel">
+						<a href='index.html'><img src="./images/logo.png" alt="Bon App" class="search-bar-logo"></a>
+						<div class="input-group input-group-lg search-box detail-search">
+							<input type="text" class="form-control search-input" placeholder="Goodfellas, French, Brunch, Rooftop..." v-model='searchKey' @keyup.13='getSearch'">
+							<a href="javascript:void(0);" class="input-group-addon glyphicon glyphicon-search action" @click='getSearch'"></a>
+							<div class="pos-abs search-input-cancel cursor" v-show="!(searchKey==''||searchKey==null)" @click="searchKey=''"></div>
+						</div>
+						<ul class="search-bar-login" v-show="!isLogin">
+							<li class="pull-left mg-r-20">
+								<a href="javascript:void(0)" class="font16 cfff text-hover" @click='back2login(0)'>Log in</a>
+							</li>
+							<li class="pull-left">
+								<a class="btn-signup font16" href="javascript:void(0)" @click='back2login(1)'>Sign up</a>
+							</li>
+						</ul>
+
+						<div class="search-bar-login" v-show="isLogin">
+							<div class="dropdown">
+								<a class="block" href="javascript:void(0)" @click="isShow=!isShow">
+									<img :src="d.headImage||'images/userhead.png'" width="45" height="45" class="search-bar-head">
+									<span class="cfff mg-r-5">{{d.firstname}}</span><span class="caret cfff"></span>
+								</a>
+								<ul class="dropdown-menu" aria-labelledby="dLabel" :class='{block:isShow}' >
+									<li><a role="menuitem" tabindex="-1" href="javascript:void(0)" @click='logout'>Log out</a></li>
+								</ul>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>		
+	
+	</template>	
+			<script src="js/vue/vue.js"></script>
+  		<script src="js/vue/vue-resource.js"></script>
+  		<script src="js/detail.js"></script>
+</html>
